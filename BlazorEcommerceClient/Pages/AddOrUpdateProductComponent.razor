@@ -1,0 +1,94 @@
+﻿@page "/add-product"
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="MyProduct" Enhance OnValidSubmit="HandleSaveProduct">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="h3">
+                            Add Product
+                        </h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row p-3">
+                            <div class="col-4">
+                                <label class="fw-bold">Name</label>
+                            </div>
+                            <div class="col-8 py-2">
+                                <InputText class="w-100" @bind-Value="MyProduct.Name"></InputText>
+                            </div>
+                            <div class="col-4 py-2">
+                                <label class="fw-bold">Price</label>
+                            </div>
+                            <div class="col-8 py-2">
+                                <InputNumber class="w-100" @bind-Value="MyProduct.Price"></InputNumber>
+                            </div>
+                            <div class="col-4 py-2">
+                                <label class="fw-bold">Quantity</label>
+                            </div>
+                            <div class="col-8 py-2">
+                                <InputNumber class="w-100" @bind-Value="MyProduct.Quantity"></InputNumber>
+                            </div>
+                            <div class="col-12 pt-2">
+                                <label class="fw-bold">Description</label>
+                            </div>
+                            <div class="col-12 py-2">
+                                <InputTextArea class="w-100" @bind-Value="MyProduct.Description"></InputTextArea>
+                            </div>
+                            <div class="col-12 pt-2">
+                                <label class="fw-bold @(ImageUploadMessage == "" ? "" : "text-danger")">
+                                    @(ImageUploadMessage == "" ? "Upload Image" : ImageUploadMessage)
+                                </label>
+                            </div>
+                            <div class="col-12 py-2">
+                                <InputFile class="form-control" OnChange="UploadImage"></InputFile>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group mt-3" style="display: flex; justify-content: end;">
+                            @if (ShowSaveButton)
+                            {
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-plus"></i>
+                                    Save Product
+                                </button>
+                            }
+                            <BusyButtonComponent IsVisible="ShowBusyButton"></BusyButtonComponent>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+@code {
+    Product MyProduct = new();
+    string ImageUploadMessage = "";
+    public bool ShowBusyButton { get; set; } = false;
+    public bool ShowSaveButton { get; set; } = true;
+    async Task HandleSaveProduct()
+    {
+
+    }
+    async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        if (e.File.Name.ToLower().Contains(".png"))
+        {
+            var format = "image/png";
+            var resizeImage = await e.File.RequestImageFileAsync(format, 300, 300);
+            var buffer = new byte[resizeImage.Size];
+            await resizeImage.OpenReadStream().ReadAsync(buffer);
+            var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            ImageUploadMessage = "";
+            MyProduct.Base64Img = imageData;
+            imageData = "";
+            return;
+        }
+        ImageUploadMessage = "PNG file needed";
+    }
+}

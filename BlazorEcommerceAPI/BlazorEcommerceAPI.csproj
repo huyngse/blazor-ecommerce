@@ -18,10 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BlazorEcommerceClient\BlazorEcommerceClient.csproj" />
     <ProjectReference Include="..\BlazorEcommerceSharedLibrary\BlazorEcommerceSharedLibrary.csproj" />
   </ItemGroup>
